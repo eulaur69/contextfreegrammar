@@ -118,6 +118,9 @@ class ContextFreeGrammar{
             this->startingSymbol = startingSymbol;
             sort(this->nonterminals.begin(),this->nonterminals.end());
             sort(this->terminals.begin(),this->terminals.end());
+            buildB();
+        }
+        void buildB(){
             map<nonterminal,Node*> firstLHSs;
             for(int i = 0;i<this->rules.size();i++){
                 ProductionRule rule = this->rules[i];
@@ -129,7 +132,7 @@ class ContextFreeGrammar{
                     firstLHSs[LHS] = RHS;
                 } else continue;
             }
-            for(ProductionRule &rule : rules){
+            for(ProductionRule &rule : this->rules){
                 Node* RHS = rule.getRHS();
                 while(RHS != nullptr){
                     if(isTerminal(RHS->getA())){
@@ -138,6 +141,9 @@ class ContextFreeGrammar{
                     RHS = get<Node*>(RHS->getD());
                 }
             }
+        }
+        void buildC(){
+
         }
 };
 
