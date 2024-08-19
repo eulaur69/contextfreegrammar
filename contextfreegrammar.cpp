@@ -50,10 +50,11 @@ class Node{
 };
 
 class ProductionRule{
-    public:
+    private:
         nonterminal LHS;
         Node* RHS;
         bool isLastRuleWithSameLHS;
+    public:
         ProductionRule(){
             LHS = ""; //nonterminal symbol
             RHS = new Node();
@@ -72,23 +73,71 @@ class ProductionRule{
             current->setA(RHSarr.back());
             current->setD(nullptr);
         }
+        nonterminal getLHS(){
+            return this->LHS;
+        }
+        Node* getRHS(){
+            return this->RHS;
+        }
+        void setLHS(nonterminal LHS){
+            this->LHS = LHS;
+        }
+        void setRHS(Node* RHS){
+            this->RHS = RHS;
+        }
         //todo add adding,removal functions
 };
 
 class ContextFreeGrammar{
-    public:
+    private:
         vector<nonterminal> nonterminals;
         vector<terminal> terminals;
         vector<ProductionRule> rules;
         nonterminal startingSymbol;
+        bool isTerminal(terminal t){
+            if(binary_search(terminals.begin(),terminals.end(),t)){
+                return 1;
+            } else return 0;
+        }
+        bool isNonerminal(nonterminal nt){
+            if(binary_search(nonterminals.begin(),nonterminals.end(),nt)){
+                return 1;
+            } else return 0;
+        }
+    public:
         ContextFreeGrammar(){
             startingSymbol = "";
         }
         ContextFreeGrammar(vector<nonterminal> nonterminals, vector<terminal> terminals, vector<ProductionRule> rules, nonterminal startingSymbol){
             this->nonterminals = nonterminals;
             this->terminals = terminals;
+            sort(rules.begin(),rules.end(), [](ProductionRule p1, ProductionRule p2){
+                   return p1.getLHS() < p2.getLHS();
+                });
             this->rules = rules;
             this->startingSymbol = startingSymbol;
+            sort(this->nonterminals.begin(),this->nonterminals.end());
+            sort(this->terminals.begin(),this->terminals.end());
+            map<nonterminal,Node*> firstLHSs;
+            for(int i = 0;i<this->rules.size();i++){
+                ProductionRule rule = this->rules[i];
+                nonterminal LHS = rule.getLHS();
+                Node* RHS = rule.getRHS();
+                if(i == 0){
+                    firstLHSs[LHS] = RHS;
+                } else if(LHS != rules[i-1].getLHS()){
+                    firstLHSs[LHS] = RHS;
+                } else continue;
+            }
+            for(ProductionRule &rule : rules){
+                Node* RHS = rule.getRHS();
+                while(RHS != nullptr){
+                    if(isTerminal(RHS->getA())){
+                        RHS->setB(nullptr);
+                    } else RHS->setB(firstLHSs[RHS->getA()]);
+                    RHS = get<Node*>(RHS->getD());
+                }
+            }
         }
 };
 
@@ -106,11 +155,12 @@ int main(){
     vector<ProductionRule> P = {
         ProductionRule("C",{"D","C"}),
         ProductionRule("C",{"C","D"}),
+        ProductionRule("D",{"0"}),
         ProductionRule("C",{"C","C","D"}),
         ProductionRule("C",{"D"}),
-        ProductionRule("D",{"0"}),
         ProductionRule("D",{"1"})
     };
     string S = N[0];
     ContextFreeGrammar cfg = ContextFreeGrammar(N,T,P,S);
+    cout << "yes";
 }
