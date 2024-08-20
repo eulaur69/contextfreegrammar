@@ -53,6 +53,7 @@ class ProductionRule{
     private:
         nonterminal LHS;
         Node* RHS;
+        Node* RHSlast;
         bool isLastRuleWithSameLHS;
     public:
         ProductionRule(){
@@ -72,6 +73,7 @@ class ProductionRule{
             }
             current->setA(RHSarr.back());
             current->setD(nullptr);
+            this->RHSlast = current;
         }
         nonterminal getLHS(){
             return this->LHS;
@@ -84,6 +86,14 @@ class ProductionRule{
         }
         void setRHS(Node* RHS){
             this->RHS = RHS;
+        }
+        bool checkisLastRuleWithSameLHS(){
+            if(this->isLastRuleWithSameLHS){
+                return 1;
+            } else return 0;
+        }
+        void setIsLastRuleWithSameLHS(bool status){
+            this->isLastRuleWithSameLHS = status;
         }
         //todo add adding,removal functions
 };
@@ -119,6 +129,7 @@ class ContextFreeGrammar{
             sort(this->nonterminals.begin(),this->nonterminals.end());
             sort(this->terminals.begin(),this->terminals.end());
             buildB();
+            buildC();
         }
         void buildB(){
             map<nonterminal,Node*> firstLHSs;
@@ -128,10 +139,16 @@ class ContextFreeGrammar{
                 Node* RHS = rule.getRHS();
                 if(i == 0){
                     firstLHSs[LHS] = RHS;
+                    rules[i].setIsLastRuleWithSameLHS(0);
                 } else if(LHS != rules[i-1].getLHS()){
                     firstLHSs[LHS] = RHS;
-                } else continue;
+                    rules[i-1].setIsLastRuleWithSameLHS(1);
+                } else {
+                    rules[i].setIsLastRuleWithSameLHS(0);
+                    continue;
+                }
             }
+            rules[rules.size()-1].setIsLastRuleWithSameLHS(1);
             for(ProductionRule &rule : this->rules){
                 Node* RHS = rule.getRHS();
                 while(RHS != nullptr){
@@ -143,7 +160,32 @@ class ContextFreeGrammar{
             }
         }
         void buildC(){
-
+            for(int i = 0;i<this->rules.size();i++){
+                ProductionRule rule = this->rules[i];
+                Node *RHS = rule.getRHS();
+                if(i == this->rules.size()-1){
+                    bool processedFirst = 0;
+                    while(RHS != nullptr){
+                        if(!processedFirst){
+                            RHS->setC(nullptr);
+                            processedFirst = 1;
+                        } else RHS->setC(-1);
+                        RHS = get<Node*>(RHS->getD());
+                    }
+                } else {
+                    ProductionRule nextRule = this->rules[i+1];
+                    bool processedFirst = 0;
+                    while(RHS != nullptr){
+                        if(!processedFirst){
+                            RHS->setC(nextRule.getRHS());
+                            processedFirst = 1;
+                        } else if(rule.checkisLastRuleWithSameLHS()){
+                            RHS->setC(nullptr);
+                        } else RHS->setC(-1);
+                        RHS = get<Node*>(RHS->getD());
+                    }
+                }
+            }
         }
 };
 
