@@ -1,11 +1,11 @@
 #include <bits/stdc++.h>
 #include <variant>
+#include "contextfreegrammar.h"
 
 using namespace std;
+using namespace cfg;
 
-using terminal = string;
-using nonterminal = string;
-
+/*
 class Node{
     private:
         string a; //terminal or non-terminal
@@ -188,7 +188,7 @@ class ContextFreeGrammar{
             }
         }
 };
-
+*/
 int main(){
     Node* main = new Node();
     Node *a = new Node();
