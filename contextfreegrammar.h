@@ -1,20 +1,19 @@
-#include <bits/stdc++.h>
+#include <string>
+#include <map>
+#include <vector>
+#include <algorithm>
 #include <variant>
 
-using namespace std;
+using nonterminal = std::string;
+using terminal = std::string;
 
-using terminal = string;
-using nonterminal = string;
-
-namespace cfg
-{
-
+namespace cfg{
     class Node{
         private:
-            string a; //terminal or non-terminal
-            variant<Node*, int> b; //pointer or integer
-            variant<Node*, int> c; //pointer or integer
-            variant<Node*, int> d; //pointer or integer (nullptr)
+            std::string a; //terminal or non-terminal
+            std::variant<Node*, int> b; //pointer or integer
+            std::variant<Node*, int> c; //pointer or integer
+            std::variant<Node*, int> d; //pointer or integer (nullptr)
         public:
             Node(){
                 a = "";
@@ -23,31 +22,31 @@ namespace cfg
                 d = 0;
             }
 
-            void setA(string a){
+            void setA(std::string a){
                 this->a = a;
             }
-            void setB(variant<Node*, int> b){
+            void setB(std::variant<Node*, int> b){
                 this->b = b;
             }
-            void setC(variant<Node*, int> c){
+            void setC(std::variant<Node*, int> c){
                 this->c = c;
             }
-            void setD(variant<Node*, int> d){
+            void setD(std::variant<Node*, int> d){
                 this->d = d;
             }
 
-            string getA() const {
+            std::string getA() const {
                 return this->a;
             }
-            variant<Node*, int> getB() const {
+            std::variant<Node*, int> getB() const {
                 return this->b;
             }
 
-            variant<Node*, int> getC() const {
+            std::variant<Node*, int> getC() const {
                 return this->c;
             }
 
-            variant<Node*, int> getD() const {
+            std::variant<Node*, int> getD() const {
                 return this->d;
             }
     };
@@ -64,7 +63,7 @@ namespace cfg
                 RHS = new Node();
                 isLastRuleWithSameLHS = 1;
             }
-            ProductionRule(nonterminal LHS, vector<string> RHSarr){
+            ProductionRule(nonterminal LHS, std::vector<std::string> RHSarr){
                 this->LHS = LHS;
                 this->RHS = new Node();
                 Node* current = this->RHS;
@@ -72,7 +71,7 @@ namespace cfg
                 for (int i = 0; i < RHSarr.size() - 1; i++) {
                     current->setA(RHSarr[i]);
                     current->setD(new Node());
-                    current = get<Node*>(current->getD());
+                    current = std::get<Node*>(current->getD());
                 }
                 current->setA(RHSarr.back());
                 current->setD(nullptr);
@@ -103,17 +102,17 @@ namespace cfg
 
     class ContextFreeGrammar{
         private:
-            vector<nonterminal> nonterminals;
-            vector<terminal> terminals;
-            vector<ProductionRule> rules;
+            std::vector<nonterminal> nonterminals;
+            std::vector<terminal> terminals;
+            std::vector<ProductionRule> rules;
             nonterminal startingSymbol;
             bool isTerminal(terminal t){
-                if(binary_search(terminals.begin(),terminals.end(),t)){
+                if(std::binary_search(terminals.begin(),terminals.end(),t)){
                     return 1;
                 } else return 0;
             }
             bool isNonerminal(nonterminal nt){
-                if(binary_search(nonterminals.begin(),nonterminals.end(),nt)){
+                if(std::binary_search(nonterminals.begin(),nonterminals.end(),nt)){
                     return 1;
                 } else return 0;
             }
@@ -121,10 +120,10 @@ namespace cfg
             ContextFreeGrammar(){
                 startingSymbol = "";
             }
-            ContextFreeGrammar(vector<nonterminal> nonterminals, vector<terminal> terminals, vector<ProductionRule> rules, nonterminal startingSymbol){
+            ContextFreeGrammar(std::vector<nonterminal> nonterminals, std::vector<terminal> terminals, std::vector<ProductionRule> rules, nonterminal startingSymbol){
                 this->nonterminals = nonterminals;
                 this->terminals = terminals;
-                sort(rules.begin(),rules.end(), [](ProductionRule p1, ProductionRule p2){
+                std::sort(rules.begin(),rules.end(), [](ProductionRule p1, ProductionRule p2){
                     return p1.getLHS() < p2.getLHS();
                     });
                 this->rules = rules;
@@ -135,7 +134,7 @@ namespace cfg
                 buildC();
             }
             void buildB(){
-                map<nonterminal,Node*> firstLHSs;
+                std::map<nonterminal,Node*> firstLHSs;
                 for(int i = 0;i<this->rules.size();i++){
                     ProductionRule rule = this->rules[i];
                     nonterminal LHS = rule.getLHS();
@@ -158,7 +157,7 @@ namespace cfg
                         if(isTerminal(RHS->getA())){
                             RHS->setB(nullptr);
                         } else RHS->setB(firstLHSs[RHS->getA()]);
-                        RHS = get<Node*>(RHS->getD());
+                        RHS = std::get<Node*>(RHS->getD());
                     }
                 }
             }
@@ -173,7 +172,7 @@ namespace cfg
                                 RHS->setC(nullptr);
                                 processedFirst = 1;
                             } else RHS->setC(-1);
-                            RHS = get<Node*>(RHS->getD());
+                            RHS = std::get<Node*>(RHS->getD());
                         }
                     } else {
                         ProductionRule nextRule = this->rules[i+1];
@@ -185,10 +184,11 @@ namespace cfg
                             } else if(rule.checkisLastRuleWithSameLHS()){
                                 RHS->setC(nullptr);
                             } else RHS->setC(-1);
-                            RHS = get<Node*>(RHS->getD());
+                            RHS = std::get<Node*>(RHS->getD());
                         }
                     }
                 }
             }
     };
 }
+
