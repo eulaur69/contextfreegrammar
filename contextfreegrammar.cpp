@@ -205,5 +205,15 @@ int main(){
     };
     std::string S = N[0];
     cfg::ContextFreeGrammar cfg = cfg::ContextFreeGrammar(N,T,P,S);
+    cfg::Node* root = cfg.getProductionRules()[4].getRHS();
+    while(root != nullptr){
+        cfg::Node* current = root;
+        while(current != nullptr){
+            std::cout << current->getA() << " ";
+            current = std::get<cfg::Node*>(current->getD());
+        }
+        std::cout << std::endl;
+        root = std::get<cfg::Node*>(root->getC());
+    }
     std::cout << "yes";
 }

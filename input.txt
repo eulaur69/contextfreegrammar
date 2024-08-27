@@ -1,0 +1,9 @@
+C,D 
+0,1
+C
+C C D
+C D C
+C C C D
+C D 
+D 0
+D 1
