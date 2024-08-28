@@ -176,9 +176,10 @@ namespace cfg {
                     bool processedFirst = 0;
                     while (RHS != nullptr) {
                         if (!processedFirst) {
-                            if(rule.checkisLastRuleWithSameLHS()){
+                            if (rule.checkisLastRuleWithSameLHS()) {
                                 RHS->setC(nullptr);
-                            } else RHS->setC(nextRule.getRHS());
+                            }
+                            else RHS->setC(nextRule.getRHS());
                             processedFirst = 1;
                         }
                         else if (rule.checkisLastRuleWithSameLHS()) {
@@ -234,7 +235,7 @@ namespace cfg {
         void setStartingSymbol(const std::string& newStartingSymbol) {
             this->startingSymbol = newStartingSymbol;
         }
-        
+
     };
 }
 

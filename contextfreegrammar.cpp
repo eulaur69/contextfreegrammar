@@ -193,19 +193,30 @@ class ContextFreeGrammar{
 };*/
 
 int main(){
-    std::vector<nonterminal> N = {"C","D"};
-    std::vector<terminal> T = {"0","1"};
-    std::vector<cfg::ProductionRule> P = {
+    std::vector<nonterminal> N = {"a","b","c"};
+    std::vector<terminal> T = {"0","1","2"};
+    /*std::vector<cfg::ProductionRule> P = {
         cfg::ProductionRule("C",{"D","C"}),
         cfg::ProductionRule("C",{"C","D"}),
         cfg::ProductionRule("D",{"0"}),
         cfg::ProductionRule("C",{"C","C","D"}),
         cfg::ProductionRule("C",{"D"}),
         cfg::ProductionRule("D",{"1"})
+    };*/
+    std::vector<cfg::ProductionRule> P = {
+        cfg::ProductionRule("a",{"a","b","c"}),
+        cfg::ProductionRule("b",{"a","b","c"}),
+        cfg::ProductionRule("c",{"a","b","c"}),
+        cfg::ProductionRule("a",{"0"}),
+        cfg::ProductionRule("a",{"1"}),
+        cfg::ProductionRule("b",{"1"}),
+        cfg::ProductionRule("b",{"2"}),
+        cfg::ProductionRule("c",{"2"}),
+        cfg::ProductionRule("c",{"0"}),
     };
     std::string S = N[0];
     cfg::ContextFreeGrammar cfg = cfg::ContextFreeGrammar(N,T,P,S);
-    cfg::Node* root = cfg.getProductionRules()[4].getRHS();
+    cfg::Node* root = cfg.getProductionRules()[6].getRHS();
     while(root != nullptr){
         cfg::Node* current = root;
         while(current != nullptr){
