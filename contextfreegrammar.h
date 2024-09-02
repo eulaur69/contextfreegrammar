@@ -13,13 +13,13 @@ namespace cfg {
         std::string a; //terminal or non-terminal
         std::variant<Node*, int> b; //pointer or integer
         std::variant<Node*, int> c; //pointer or integer
-        std::variant<Node*, int> d; //pointer or integer (nullptr)
+        std::variant<Node*, int> d; //pointer or integer
     public:
         Node() {
-            a = "";
-            b = nullptr;
-            c = nullptr;
-            d = nullptr;
+            this->a = "";
+            this->b = nullptr;
+            this->c = nullptr;
+            this->d = nullptr;
         }
 
         void setA(std::string a) {
@@ -68,6 +68,7 @@ namespace cfg {
         ProductionRule(nonterminal LHS, std::vector<std::string> RHSarr) {
             this->LHS = LHS;
             this->RHS = new Node();
+            this->isLastRuleWithSameLHS = 1;
             Node* current = this->RHS;
             this->RHSstring = "";
             for (int i = 0; i < RHSarr.size() - 1; i++) {
@@ -85,6 +86,9 @@ namespace cfg {
         }
         Node* getRHS() {
             return this->RHS;
+        }
+        Node* getRHSlast(){
+            return this->RHSlast;
         }
         std::string getRHSstring() {
             return this->RHSstring;
@@ -203,8 +207,8 @@ namespace cfg {
                 });
             this->rules = rules;
             this->startingSymbol = startingSymbol;
-            sort(this->nonterminals.begin(), this->nonterminals.end());
-            sort(this->terminals.begin(), this->terminals.end());
+            std::sort(this->nonterminals.begin(), this->nonterminals.end());
+            std::sort(this->terminals.begin(), this->terminals.end());
             buildB();
             buildC();
         }
